@@ -11,10 +11,8 @@
         return resolve.json();
       }).then((array) => {
         let pokemonArray = array.results;
-        let newPokemonArray = [];
         return pokemonArray.map((pokemon => {
-          // console.log(pokemon.name);
-          newPokemonArray.push(pokemon.name);
+          return pokemon.name;
         }));
       }
       ).catch((err => console.log("There was an error")));
@@ -41,14 +39,14 @@
           fetch(url).then((resolve) => {
             return resolve.json();
           }).then((arr) => {
-
-            if (arr.weight < weight) results.push(arr);
-
+            if (arr.weight < weight) results.push(arr[0]);
             // console.log(arr.weight);
-            console.log(results);
+
           })
-          return results;
         }
+        console.log("this is a result -------> ", results);
+
+        return results;
       }
       ).catch((err => console.log("There was an error")));
       return pokemonArray;
