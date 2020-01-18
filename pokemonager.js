@@ -15,7 +15,7 @@
             return pokemon.name;
           });
         })
-        .catch((err) => console.log("There was an error"));
+        .catch((err) => console.log("Error: ", err));
       return pokemonArray;
     }
 
@@ -28,22 +28,26 @@
 
       const getPokemons = (url) => fetch(url);
 
-      const findPokemonsByWeight = async () => {
-        const pokemonApiUrl = "https://pokeapi.co/api/v2/pokemon/?limit=10";
-        const pokemonObject = await (await getPokemons(pokemonApiUrl)).json();
-        const pokemonsUrls = pokemonObject.results.map((pokemon) => {
-          return pokemon.url;
-        });
-        const pokemonsByWeight = [];
+      try {
+        const findPokemonsByWeight = async () => {
+          const pokemonApiUrl = "https://pokeapi.co/api/v2/pokemon/?limit=10";
+          const pokemonObject = await (await getPokemons(pokemonApiUrl)).json();
+          const pokemonsUrls = pokemonObject.results.map((pokemon) => {
+            return pokemon.url;
+          });
+          const pokemonsByWeight = [];
 
-        for (let url of pokemonsUrls) {
-          const pokemonFullObject = await (await getPokemons(url)).json();
-          if (pokemonFullObject.weight < weight)
-            pokemonsByWeight.push(pokemonFullObject);
-        }
-        return pokemonsByWeight;
-      };
-      return findPokemonsByWeight();
+          for (let url of pokemonsUrls) {
+            const pokemonFullObject = await (await getPokemons(url)).json();
+            if (pokemonFullObject.weight < weight)
+              pokemonsByWeight.push(pokemonFullObject);
+          }
+          return pokemonsByWeight;
+        };
+        return findPokemonsByWeight();
+      } catch (err) {
+        console.log("Error: ", err);
+      }
     }
   }
   window.Pokemonager = Pokemonager;
