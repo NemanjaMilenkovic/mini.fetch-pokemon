@@ -1,53 +1,33 @@
 (() => {
   class Pokemonager {
-    // This should return an array of all the names of n Pokemon from the Pokemon API.
-
     findNames(n) {
-      const pokemonArray = fetch(
-        `https://pokeapi.co/api/v2/pokemon/?limit=${n}`
-      )
-        .then((resolve) => {
-          return resolve.json();
-        })
-        .then((array) => {
-          let pokemonArray = array.results;
-          return pokemonArray.map((pokemon) => {
-            return pokemon.name;
-          });
-        })
-        .catch((err) => console.log("Error: ", err));
-      return pokemonArray;
+      // Returns an array of all the names of n Pokemon from the Pokemon API.
+      return fetch(`https://pokeapi.co/api/v2/pokemon/?limit=${n}`)
+        .then((data) => data.json())
+        .then((data) => data.results.map((pokemon) => pokemon.name))
+        .catch((err) => console.log("Failed to fetch: ", err));
     }
 
-    // This should return an array of all the Pokemon that are under a particular weight.
-
     findUnderWeight(weight) {
-      // Your code here.
-      // ** LIMIT TO THE FIRST 10 POKEMON
-      // We don't want to make too many unnecessary calls to the Pokemon API
-
+      // Returns an array of all the Pokemon that are under a particular weight.
       const getPokemons = (url) => fetch(url);
 
-      try {
-        const findPokemonsByWeight = async () => {
-          const pokemonApiUrl = "https://pokeapi.co/api/v2/pokemon/?limit=10";
-          const pokemonObject = await (await getPokemons(pokemonApiUrl)).json();
-          const pokemonsUrls = pokemonObject.results.map((pokemon) => {
-            return pokemon.url;
-          });
-          const pokemonsByWeight = [];
+      return (async () => {
+        const pokemonApiUrl = "https://pokeapi.co/api/v2/pokemon/?limit=10";
+        const pokemonObject = await (await getPokemons(pokemonApiUrl))
+          .json()
+          .catch(console.log("Failed to fetch"));
+        const pokemonsByWeight = [];
 
-          for (let url of pokemonsUrls) {
-            const pokemonFullObject = await (await getPokemons(url)).json();
-            if (pokemonFullObject.weight < weight)
-              pokemonsByWeight.push(pokemonFullObject);
-          }
-          return pokemonsByWeight;
-        };
-        return findPokemonsByWeight();
-      } catch (err) {
-        console.log("Error: ", err);
-      }
+        for (let pokemon of pokemonObject.results) {
+          const pokemonFullObject = await (await getPokemons(pokemon.url))
+            .json()
+            .catch(console.log("Failed to fetch urls"));
+          if (pokemonFullObject.weight < weight)
+            pokemonsByWeight.push(pokemonFullObject);
+        }
+        return pokemonsByWeight;
+      })();
     }
   }
   window.Pokemonager = Pokemonager;
